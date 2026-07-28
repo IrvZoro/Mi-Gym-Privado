@@ -1,0 +1,215 @@
+:root{
+  --bg: #1c1b19;
+  --surface: #262421;
+  --surface-2: #2f2c28;
+  --line: #3a3630;
+  --text: #f2efe9;
+  --muted: #a9a399;
+  --accent: #c9a15a; /* brass default, se sobreescribe según biotipo */
+  --accent-soft: rgba(201,161,90,0.16);
+  --danger: #d9614f;
+  --radius: 14px;
+  --font-display: "Bebas Neue", sans-serif;
+  --font-body: "Work Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+}
+
+*{ box-sizing: border-box; }
+
+html,body{
+  margin:0; padding:0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+.floor-texture{
+  position: fixed; inset:0; z-index:-1; pointer-events:none;
+  background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 14px);
+  background-color: var(--bg);
+}
+
+.topbar{
+  display:flex; align-items:center; justify-content:space-between;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+}
+.brand{
+  font-family: var(--font-display);
+  font-size: 28px;
+  letter-spacing: 3px;
+  color: var(--accent);
+}
+
+.btn-ghost{
+  background:transparent; border:1px solid var(--line); color: var(--muted);
+  padding: 8px 14px; border-radius: 999px; font-family: var(--font-body);
+  font-size: 13px; cursor:pointer; transition: all .15s ease;
+}
+.btn-ghost:hover{ border-color: var(--accent); color: var(--text); }
+
+main#app{
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 32px 20px 80px;
+}
+
+.step.hidden{ display:none; }
+
+.wizard-dots{ display:flex; gap:8px; margin-bottom: 28px; }
+.plate{
+  width:28px; height:6px; border-radius:3px;
+  background: var(--surface-2);
+}
+.plate.done{ background: var(--accent); opacity:.55; }
+.plate.active{ background: var(--accent); }
+
+.hero-title{
+  font-family: var(--font-display);
+  font-size: 56px;
+  line-height: 0.98;
+  letter-spacing: 1px;
+  margin: 0 0 18px;
+  color: var(--text);
+}
+.hero-sub{
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.6;
+  max-width: 46ch;
+  margin-bottom: 32px;
+}
+
+.btn-primary{
+  background: var(--accent);
+  color: #191713;
+  border:none;
+  font-family: var(--font-body);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 22px;
+  border-radius: 10px;
+  cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s ease;
+}
+.btn-primary:hover{ transform: translateY(-1px); box-shadow: 0 6px 18px var(--accent-soft); }
+.btn-big{ font-size:16px; padding:16px 28px; }
+.btn-block{ width:100%; margin-top:22px; }
+
+.btn-text{
+  background:none; border:none; color: var(--muted);
+  text-decoration: underline; text-underline-offset:3px;
+  font-family: var(--font-body); font-size: 13px; cursor:pointer; margin-top:18px;
+}
+.btn-text:hover{ color: var(--text); }
+
+.step-title{
+  font-family: var(--font-display);
+  font-size: 32px;
+  letter-spacing: .5px;
+  margin: 0 0 6px;
+}
+.step-sub{ color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+
+/* ---------- Biotipo cards ---------- */
+.biotipo-grid{ display:grid; grid-template-columns: 1fr; gap:14px; }
+.biotipo-card{
+  display:flex; align-items:center; gap:16px;
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor:pointer;
+  text-align:left;
+  transition: border-color .15s ease, background .15s ease;
+}
+.biotipo-card:hover{ border-color: var(--bt-color, var(--accent)); }
+.biotipo-card.selected{
+  border-color: var(--bt-color, var(--accent));
+  background: var(--surface-2);
+}
+.biotipo-silhouette{ width:46px; height:70px; flex-shrink:0; color: var(--bt-color, var(--accent)); }
+.biotipo-info .name{
+  font-family: var(--font-display);
+  font-size:22px; letter-spacing:.5px; margin-bottom:2px;
+  color: var(--bt-color, var(--text));
+}
+.biotipo-info .desc{ color: var(--muted); font-size: 13px; line-height:1.5; }
+
+/* ---------- Lugar cards ---------- */
+.lugar-grid{ display:grid; grid-template-columns: 1fr 1fr; gap:14px; }
+.lugar-card{
+  background: var(--surface);
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  padding: 24px 14px;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  cursor:pointer; color: var(--text);
+  transition: border-color .15s ease, background .15s ease;
+}
+.lugar-card:hover, .lugar-card.selected{ border-color: var(--accent); background: var(--surface-2); }
+.lugar-icon{ width:44px; height:44px; color: var(--accent); }
+.lugar-name{ font-family: var(--font-display); font-size:20px; letter-spacing:.5px; }
+.lugar-desc{ color: var(--muted); font-size:12px; text-align:center; }
+
+/* ---------- Plan header ---------- */
+.plan-header{ display:flex; align-items:flex-start; justify-content:space-between; gap:12px; margin-bottom:6px; }
+.eyebrow{
+  font-family: var(--font-mono); font-size:11px; letter-spacing:2px;
+  color: var(--accent); text-transform:uppercase;
+}
+.plan-summary{ color: var(--muted); font-size:14px; margin-bottom:20px; line-height:1.6; }
+
+.tabs{ display:flex; gap:8px; margin-bottom:18px; overflow-x:auto; padding-bottom:4px; }
+.tab-btn{
+  flex-shrink:0;
+  background: var(--surface); border:1px solid var(--line); color: var(--muted);
+  padding: 9px 16px; border-radius: 999px; font-family: var(--font-body); font-size:13px;
+  font-weight:600; cursor:pointer;
+}
+.tab-btn.active{ background: var(--accent); color:#191713; border-color: var(--accent); }
+
+.day-block{ margin-bottom: 22px; }
+.day-heading{
+  font-family: var(--font-display); font-size:20px; letter-spacing:.5px;
+  color: var(--accent); margin-bottom: 10px;
+}
+
+.exercise-card{
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+}
+.exercise-info .ex-name{ font-weight:600; font-size:15px; margin-bottom:3px; }
+.exercise-info .ex-nota{ color: var(--muted); font-size:12.5px; line-height:1.5; max-width:38ch;}
+.exercise-info .ex-tags{ display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
+.tag{
+  font-family: var(--font-mono); font-size:10.5px; letter-spacing:.5px;
+  padding: 2px 7px; border-radius:5px; background: var(--surface-2); color: var(--muted);
+}
+.tag.cbum{ background: var(--accent-soft); color: var(--accent); }
+.ex-sets{
+  font-family: var(--font-mono); font-weight:700; font-size:15px;
+  color: var(--text); white-space:nowrap; text-align:right;
+}
+.ex-equipo{ display:block; font-family: var(--font-body); font-weight:400; font-size:11px; color: var(--muted); margin-top:2px; }
+
+/* ---------- Muscle chips ---------- */
+.muscle-chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+.muscle-chip{
+  background: var(--surface); border:1px solid var(--line); color: var(--text);
+  padding:9px 16px; border-radius:999px; font-size:13px; font-weight:600; cursor:pointer;
+}
+.muscle-chip.active{ background: var(--accent); color:#191713; border-color:var(--accent); }
+
+.footer-note{
+  text-align:center; color: var(--muted); font-size:11px; padding: 20px; opacity:.6;
+}
+
+@media (min-width: 560px){
+  .biotipo-grid{ grid-template-columns: 1fr; }
+}
