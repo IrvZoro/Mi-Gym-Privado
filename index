@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FORJA — Entrenamiento por biotipo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Work+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="floor-texture" aria-hidden="true"></div>
+
+<header class="topbar">
+  <div class="brand">FORJA</div>
+  <div class="topbar-actions">
+    <button id="btn-reset" class="btn-ghost" title="Empezar de nuevo">Reiniciar</button>
+  </div>
+</header>
+
+<main id="app">
+
+  <!-- ===================== PASO 0: BIENVENIDA ===================== -->
+  <section class="step" id="step-welcome" data-step="welcome">
+    <div class="wizard-dots"><span class="plate active"></span><span class="plate"></span><span class="plate"></span></div>
+    <h1 class="hero-title">ENTRENA<br>SEGÚN TU<br>BIOTIPO</h1>
+    <p class="hero-sub">FORJA arma tu rutina según tu tipo de cuerpo, dónde entrenas, y te deja atacar cualquier músculo cuando quieras. Incluye ejercicios de aislamiento estilo bodybuilding clásico para más estética.</p>
+    <button class="btn-primary btn-big" id="btn-start">Empezar</button>
+  </section>
+
+  <!-- ===================== PASO 1: BIOTIPO ===================== -->
+  <section class="step hidden" id="step-biotipo" data-step="biotipo">
+    <div class="wizard-dots"><span class="plate done"></span><span class="plate active"></span><span class="plate"></span></div>
+    <h2 class="step-title">1. ¿Cuál es tu biotipo?</h2>
+    <p class="step-sub">Elige el que más se parezca a tu cuerpo natural, no al que quieres tener.</p>
+
+    <div class="biotipo-grid" id="biotipo-grid"></div>
+
+    <button class="btn-text" id="btn-biotipo-help">¿No sabes cuál eres? Ver diferencias</button>
+  </section>
+
+  <!-- ===================== PASO 2: LUGAR ===================== -->
+  <section class="step hidden" id="step-lugar" data-step="lugar">
+    <div class="wizard-dots"><span class="plate done"></span><span class="plate done"></span><span class="plate active"></span></div>
+    <h2 class="step-title">2. ¿Dónde entrenas?</h2>
+    <p class="step-sub">Puedes cambiar esto después desde tu perfil.</p>
+
+    <div class="lugar-grid">
+      <button class="lugar-card" data-lugar="casa">
+        <svg viewBox="0 0 64 64" class="lugar-icon"><path d="M8 30 L32 10 L56 30 V54 H8 Z" fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round"/><rect x="26" y="38" width="12" height="16" fill="currentColor"/></svg>
+        <span class="lugar-name">Casa</span>
+        <span class="lugar-desc">Peso corporal, mochila, bandas</span>
+      </button>
+      <button class="lugar-card" data-lugar="gym">
+        <svg viewBox="0 0 64 64" class="lugar-icon"><rect x="6" y="28" width="8" height="8" fill="currentColor"/><rect x="50" y="28" width="8" height="8" fill="currentColor"/><rect x="14" y="24" width="6" height="16" fill="currentColor"/><rect x="44" y="24" width="6" height="16" fill="currentColor"/><rect x="20" y="30" width="24" height="4" fill="currentColor"/></svg>
+        <span class="lugar-name">Gimnasio</span>
+        <span class="lugar-desc">Barras, máquinas, poleas</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ===================== RESULTADO: PLAN ===================== -->
+  <section class="step hidden" id="step-plan" data-step="plan">
+    <div class="plan-header">
+      <div>
+        <span class="eyebrow" id="plan-eyebrow">TU PLAN</span>
+        <h2 class="step-title" id="plan-title">Rutina</h2>
+      </div>
+      <button class="btn-ghost" id="btn-edit-perfil">Editar</button>
+    </div>
+
+    <p class="plan-summary" id="plan-summary"></p>
+
+    <nav class="tabs" id="plan-tabs" role="tablist"></nav>
+    <div id="plan-content"></div>
+
+    <button class="btn-primary btn-block" id="btn-goto-musculo">Entrenar un músculo específico →</button>
+  </section>
+
+  <!-- ===================== ENTRENAR MÚSCULO ESPECÍFICO ===================== -->
+  <section class="step hidden" id="step-musculo" data-step="musculo">
+    <div class="plan-header">
+      <div>
+        <span class="eyebrow">A LA CARTA</span>
+        <h2 class="step-title">Entrenar músculo específico</h2>
+      </div>
+      <button class="btn-ghost" id="btn-back-plan">← Volver al plan</button>
+    </div>
+    <p class="plan-summary">Elige un grupo muscular y arma una sesión extra o de refuerzo.</p>
+
+    <div class="muscle-chip-row" id="muscle-chip-row"></div>
+    <div id="muscle-content"></div>
+  </section>
+
+</main>
+
+<div class="footer-note">Hecho por Ing Zoro · El Guamil Labs</div>
+
+<script src="exercises.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
