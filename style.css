@@ -25,9 +25,36 @@ html,body{
 }
 
 .floor-texture{
-  position: fixed; inset:0; z-index:-1; pointer-events:none;
+  position: fixed; inset:0; z-index:-2; pointer-events:none;
   background-image: repeating-linear-gradient(135deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 2px, transparent 2px, transparent 14px);
   background-color: var(--bg);
+}
+
+.aurora{
+  position: fixed; inset:0; z-index:-1; pointer-events:none;
+  background:
+    radial-gradient(480px 320px at 15% 0%, var(--accent-soft), transparent 60%),
+    radial-gradient(420px 300px at 100% 30%, var(--accent-soft), transparent 55%);
+  opacity:.7;
+  filter: blur(10px);
+  transition: background 1.2s ease;
+  animation: auroraDrift 16s ease-in-out infinite alternate;
+}
+@keyframes auroraDrift{
+  0%{ transform: translate3d(0,0,0) scale(1); }
+  100%{ transform: translate3d(-2%, 3%, 0) scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce){
+  .aurora{ animation: none; }
+  *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
+}
+
+/* ---------- Transiciones entre pasos ---------- */
+.step{ animation: stepIn .42s cubic-bezier(.22,.8,.32,1) both; }
+@keyframes stepIn{
+  from{ opacity:0; transform: translateY(14px); }
+  to{ opacity:1; transform: translateY(0); }
 }
 
 .topbar{
@@ -47,7 +74,17 @@ html,body{
   padding: 8px 14px; border-radius: 999px; font-family: var(--font-body);
   font-size: 13px; cursor:pointer; transition: all .15s ease;
 }
-.btn-ghost:hover{ border-color: var(--accent); color: var(--text); }
+.btn-ghost:hover{ border-color: var(--accent); color: var(--text); transform: translateY(-1px); }
+.btn-ghost:active{ transform: translateY(0) scale(.97); }
+
+.topbar-actions{ display:flex; align-items:center; gap:10px; }
+.racha-chip{
+  font-family: var(--font-mono); font-size:12px; color: var(--accent);
+  background: var(--accent-soft); border-radius:999px; padding:6px 12px;
+  animation: popIn .3s ease;
+}
+.racha-chip.hidden{ display:none; }
+@keyframes popIn{ from{ transform:scale(.6); opacity:0; } to{ transform:scale(1); opacity:1; } }
 
 main#app{
   max-width: 640px;
@@ -56,6 +93,7 @@ main#app{
 }
 
 .step.hidden{ display:none; }
+.hidden{ display:none !important; }
 
 .wizard-dots{ display:flex; gap:8px; margin-bottom: 28px; }
 .plate{
@@ -82,6 +120,8 @@ main#app{
 }
 
 .btn-primary{
+  position: relative;
+  overflow: hidden;
   background: var(--accent);
   color: #191713;
   border:none;
@@ -91,9 +131,17 @@ main#app{
   padding: 14px 22px;
   border-radius: 10px;
   cursor:pointer;
-  transition: transform .12s ease, box-shadow .12s ease;
+  transition: transform .15s ease, box-shadow .15s ease;
 }
-.btn-primary:hover{ transform: translateY(-1px); box-shadow: 0 6px 18px var(--accent-soft); }
+.btn-primary::after{
+  content:""; position:absolute; inset:0;
+  background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,.35) 50%, transparent 100%);
+  transform: translateX(-120%);
+  transition: transform .5s ease;
+}
+.btn-primary:hover::after{ transform: translateX(120%); }
+.btn-primary:hover{ transform: translateY(-2px); box-shadow: 0 10px 24px var(--accent-soft); }
+.btn-primary:active{ transform: translateY(0) scale(.98); }
 .btn-big{ font-size:16px; padding:16px 28px; }
 .btn-block{ width:100%; margin-top:22px; }
 
@@ -115,6 +163,7 @@ main#app{
 /* ---------- Biotipo cards ---------- */
 .biotipo-grid{ display:grid; grid-template-columns: 1fr; gap:14px; }
 .biotipo-card{
+  position:relative;
   display:flex; align-items:center; gap:16px;
   background: var(--surface);
   border: 2px solid var(--line);
@@ -122,13 +171,27 @@ main#app{
   padding: 16px;
   cursor:pointer;
   text-align:left;
-  transition: border-color .15s ease, background .15s ease;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease;
+  animation: cardIn .4s ease both;
 }
-.biotipo-card:hover{ border-color: var(--bt-color, var(--accent)); }
+.biotipo-grid .biotipo-card:nth-child(1){ animation-delay: .03s; }
+.biotipo-grid .biotipo-card:nth-child(2){ animation-delay: .09s; }
+.biotipo-grid .biotipo-card:nth-child(3){ animation-delay: .15s; }
+@keyframes cardIn{ from{ opacity:0; transform: translateX(-10px);} to{ opacity:1; transform:translateX(0);} }
+.biotipo-card:hover{ border-color: var(--bt-color, var(--accent)); transform: translateY(-2px); }
 .biotipo-card.selected{
   border-color: var(--bt-color, var(--accent));
   background: var(--surface-2);
 }
+.biotipo-card .check-badge{
+  position:absolute; top:12px; right:12px;
+  width:22px; height:22px; border-radius:50%;
+  background: var(--bt-color, var(--accent)); color:#191713;
+  display:flex; align-items:center; justify-content:center;
+  font-size:13px; font-weight:700;
+  transform: scale(0); transition: transform .25s cubic-bezier(.5,1.6,.5,1);
+}
+.biotipo-card.selected .check-badge{ transform: scale(1); }
 .biotipo-silhouette{ width:46px; height:70px; flex-shrink:0; color: var(--bt-color, var(--accent)); }
 .biotipo-info .name{
   font-family: var(--font-display);
@@ -146,10 +209,15 @@ main#app{
   padding: 24px 14px;
   display:flex; flex-direction:column; align-items:center; gap:10px;
   cursor:pointer; color: var(--text);
-  transition: border-color .15s ease, background .15s ease;
+  transition: border-color .15s ease, background .15s ease, transform .15s ease, box-shadow .15s ease;
+  animation: cardIn .4s ease both;
 }
-.lugar-card:hover, .lugar-card.selected{ border-color: var(--accent); background: var(--surface-2); }
-.lugar-icon{ width:44px; height:44px; color: var(--accent); }
+.lugar-grid .lugar-card:nth-child(2){ animation-delay: .06s; }
+.lugar-card:hover{ border-color: var(--accent); background: var(--surface-2); transform: translateY(-3px); box-shadow: 0 10px 22px rgba(0,0,0,.35); }
+.lugar-card.selected{ border-color: var(--accent); background: var(--surface-2); }
+.lugar-card:active{ transform: translateY(0) scale(.98); }
+.lugar-icon{ width:44px; height:44px; color: var(--accent); transition: transform .2s ease; }
+.lugar-card:hover .lugar-icon{ transform: scale(1.08) rotate(-2deg); }
 .lugar-name{ font-family: var(--font-display); font-size:20px; letter-spacing:.5px; }
 .lugar-desc{ color: var(--muted); font-size:12px; text-align:center; }
 
@@ -183,8 +251,26 @@ main#app{
   padding: 14px 16px;
   margin-bottom: 10px;
   display:flex; justify-content:space-between; align-items:flex-start; gap:12px;
+  transition: border-color .2s ease, background .2s ease, transform .15s ease;
+  animation: cardIn .35s ease both;
 }
-.exercise-info .ex-name{ font-weight:600; font-size:15px; margin-bottom:3px; }
+.exercise-card:hover{ border-color: var(--line); transform: translateX(2px); }
+.exercise-card.done{ background: var(--accent-soft); border-color: var(--accent); }
+.exercise-card.done .ex-name{ text-decoration: line-through; color: var(--muted); }
+
+.ex-check{
+  flex-shrink:0; width:26px; height:26px; border-radius:8px;
+  border:2px solid var(--line); background:transparent;
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; color:transparent; font-size:15px; font-weight:700;
+  transition: all .18s cubic-bezier(.5,1.6,.5,1);
+  margin-top:2px;
+}
+.ex-check:hover{ border-color: var(--accent); }
+.ex-check.checked{ background: var(--accent); border-color: var(--accent); color:#191713; transform: scale(1.08); }
+.exercise-body{ display:flex; gap:12px; flex:1; }
+
+.exercise-info .ex-name{ font-weight:600; font-size:15px; margin-bottom:3px; transition: color .2s ease; }
 .exercise-info .ex-nota{ color: var(--muted); font-size:12.5px; line-height:1.5; max-width:38ch;}
 .exercise-info .ex-tags{ display:flex; gap:6px; margin-top:6px; flex-wrap:wrap; }
 .tag{
@@ -212,4 +298,70 @@ main#app{
 
 @media (min-width: 560px){
   .biotipo-grid{ grid-template-columns: 1fr; }
+}
+
+/* ---------- Barra de progreso diaria ---------- */
+.progress-wrap{ display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.progress-track{
+  flex:1; height:8px; border-radius:999px; background: var(--surface-2); overflow:hidden;
+}
+.progress-fill{
+  height:100%; width:0%; border-radius:999px;
+  background: linear-gradient(90deg, var(--accent), var(--bt-color, var(--accent)));
+  transition: width .45s cubic-bezier(.4,.8,.4,1);
+}
+.progress-label{ font-family: var(--font-mono); font-size:12px; color: var(--muted); white-space:nowrap; }
+
+/* ---------- Modal ---------- */
+.modal-backdrop{
+  position: fixed; inset:0; z-index:50;
+  background: rgba(10,9,8,.6);
+  backdrop-filter: blur(6px);
+  display:flex; align-items:center; justify-content:center;
+  padding: 20px;
+  animation: fadeIn .2s ease;
+}
+@keyframes fadeIn{ from{ opacity:0; } to{ opacity:1; } }
+.modal-card{
+  position:relative;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 26px 24px;
+  max-width: 440px; width:100%;
+  max-height: 80vh; overflow-y:auto;
+  animation: modalPop .28s cubic-bezier(.34,1.4,.44,1);
+}
+@keyframes modalPop{ from{ opacity:0; transform: scale(.92) translateY(10px);} to{ opacity:1; transform: scale(1) translateY(0);} }
+.modal-close{
+  position:absolute; top:14px; right:14px;
+  background: var(--surface-2); border:none; color: var(--muted);
+  width:28px; height:28px; border-radius:50%; cursor:pointer;
+}
+.modal-close:hover{ color: var(--text); }
+.modal-bt-block{ margin-bottom:18px; padding-bottom:16px; border-bottom:1px solid var(--line); }
+.modal-bt-block:last-child{ border-bottom:none; margin-bottom:0; }
+.modal-bt-block .name{ font-family: var(--font-display); font-size:22px; margin-bottom:4px; }
+.modal-bt-block .desc{ color: var(--muted); font-size:13.5px; line-height:1.6; }
+
+/* ---------- Toast ---------- */
+.toast{
+  position: fixed; bottom: 26px; left:50%; transform: translateX(-50%);
+  background: var(--surface-2); border:1px solid var(--accent);
+  color: var(--text); padding: 12px 20px; border-radius: 999px;
+  font-size: 13.5px; font-weight:600; z-index: 60;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+  animation: toastIn .3s cubic-bezier(.34,1.4,.44,1);
+}
+.toast.hidden{ display:none; }
+@keyframes toastIn{ from{ opacity:0; transform: translateX(-50%) translateY(12px);} to{ opacity:1; transform: translateX(-50%) translateY(0);} }
+
+/* ---------- Confetti ---------- */
+.confetti-layer{ position: fixed; inset:0; pointer-events:none; z-index:55; overflow:hidden; }
+.confetti-piece{
+  position:absolute; top:-10px; width:8px; height:14px; opacity:.9;
+  animation: confettiFall 1.4s ease-in forwards;
+}
+@keyframes confettiFall{
+  to{ transform: translateY(105vh) rotate(360deg); opacity:0; }
 }
