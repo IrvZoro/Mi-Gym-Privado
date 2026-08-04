@@ -11,10 +11,12 @@
 <body>
 
 <div class="floor-texture" aria-hidden="true"></div>
+<div class="aurora" aria-hidden="true"></div>
 
 <header class="topbar">
   <div class="brand">FORJA</div>
   <div class="topbar-actions">
+    <span class="racha-chip hidden" id="racha-chip">🔥 <span id="racha-num">0</span> días</span>
     <button id="btn-reset" class="btn-ghost" title="Empezar de nuevo">Reiniciar</button>
   </div>
 </header>
@@ -73,6 +75,12 @@
     <p class="plan-summary" id="plan-summary"></p>
 
     <nav class="tabs" id="plan-tabs" role="tablist"></nav>
+
+    <div class="progress-wrap">
+      <div class="progress-track"><div class="progress-fill" id="day-progress-fill"></div></div>
+      <span class="progress-label" id="day-progress-label">0/0 hechos hoy</span>
+    </div>
+
     <div id="plan-content"></div>
 
     <button class="btn-primary btn-block" id="btn-goto-musculo">Entrenar un músculo específico →</button>
@@ -96,6 +104,20 @@
 </main>
 
 <div class="footer-note">Hecho por Ing Zoro · El Guamil Labs</div>
+
+<!-- Modal genérico -->
+<div class="modal-backdrop hidden" id="modal-backdrop">
+  <div class="modal-card">
+    <button class="modal-close" id="modal-close" aria-label="Cerrar">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast hidden" id="toast"></div>
+
+<!-- Confetti layer -->
+<div class="confetti-layer" id="confetti-layer" aria-hidden="true"></div>
 
 <script src="exercises.js"></script>
 <script src="app.js"></script>
