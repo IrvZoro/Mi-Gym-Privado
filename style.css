@@ -242,7 +242,9 @@ main#app{
 .day-heading{
   font-family: var(--font-display); font-size:20px; letter-spacing:.5px;
   color: var(--accent); margin-bottom: 10px;
+  display:flex; align-items:center; gap:8px;
 }
+.heading-icon{ width:26px; height:26px; color: var(--accent); }
 
 .exercise-card{
   background: var(--surface);
@@ -268,7 +270,30 @@ main#app{
 }
 .ex-check:hover{ border-color: var(--accent); }
 .ex-check.checked{ background: var(--accent); border-color: var(--accent); color:#191713; transform: scale(1.08); }
-.exercise-body{ display:flex; gap:12px; flex:1; }
+.exercise-body{ display:flex; gap:12px; flex:1; min-width:0; }
+
+.pose-badge{
+  flex-shrink:0; width:52px; height:52px; border-radius:12px;
+  background: var(--surface-2); border:1px solid var(--line);
+  color: var(--accent);
+  display:flex; align-items:center; justify-content:center;
+  cursor:pointer; padding:6px;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease;
+  margin-top:1px;
+}
+.pose-badge:hover{ transform: scale(1.06); border-color: var(--accent); background: var(--accent-soft); }
+.pose-badge:active{ transform: scale(.96); }
+.pose-svg{ width:100%; height:100%; }
+
+.pose-modal-illustration{
+  width:130px; height:130px; margin: 0 auto 10px;
+  color: var(--accent);
+  background: var(--surface-2);
+  border-radius: 18px;
+  padding: 14px;
+  display:flex; align-items:center; justify-content:center;
+}
+.pose-modal-meta{ display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
 
 .exercise-info .ex-name{ font-weight:600; font-size:15px; margin-bottom:3px; transition: color .2s ease; }
 .exercise-info .ex-nota{ color: var(--muted); font-size:12.5px; line-height:1.5; max-width:38ch;}
@@ -288,9 +313,15 @@ main#app{
 .muscle-chip-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
 .muscle-chip{
   background: var(--surface); border:1px solid var(--line); color: var(--text);
-  padding:9px 16px; border-radius:999px; font-size:13px; font-weight:600; cursor:pointer;
+  padding:7px 16px 7px 10px; border-radius:999px; font-size:13px; font-weight:600; cursor:pointer;
+  display:inline-flex; align-items:center; gap:7px;
+  transition: all .15s ease;
 }
+.muscle-chip:hover{ border-color: var(--accent); transform: translateY(-1px); }
 .muscle-chip.active{ background: var(--accent); color:#191713; border-color:var(--accent); }
+.chip-icon{ width:22px; height:22px; display:inline-flex; color: var(--accent); flex-shrink:0; }
+.muscle-chip.active .chip-icon{ color:#191713; }
+.chip-icon svg{ width:100%; height:100%; }
 
 .footer-note{
   text-align:center; color: var(--muted); font-size:11px; padding: 20px; opacity:.6;
