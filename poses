@@ -1,0 +1,200 @@
+// ============================================================
+// FORJA — Pictogramas de ejercicios (siluetas tipo señalética de gym)
+// Estilo: figura de palo minimalista, color heredado (currentColor)
+// ============================================================
+
+function figureSVG(headX, headY, lines, extra){
+  const lineTags = lines.map(l =>
+    `<line x1="${l[0]}" y1="${l[1]}" x2="${l[2]}" y2="${l[3]}" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>`
+  ).join("");
+  return `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" class="pose-svg">
+    ${extra || ""}
+    <circle cx="${headX}" cy="${headY}" r="9" fill="currentColor"/>
+    ${lineTags}
+  </svg>`;
+}
+
+const POSES = {
+
+  // ---- Empuje pecho / tríceps ----
+  press_horizontal: figureSVG(14,52,[
+    [23,52,58,52],           // torso acostado
+    [58,52,74,40],[74,40,70,62], // pierna flexionada
+    [34,52,34,20],[46,52,46,20]  // brazos empujando arriba
+  ], `<line x1="10" y1="66" x2="90" y2="66" stroke="currentColor" stroke-width="3" opacity=".25"/>`), // banco
+
+  press_incline: figureSVG(16,50,[
+    [24,50,55,58],
+    [55,58,72,48],[72,48,66,68],
+    [34,52,28,22],[44,55,50,24]
+  ], `<line x1="14" y1="62" x2="80" y2="72" stroke="currentColor" stroke-width="3" opacity=".25"/>`),
+
+  pushup: figureSVG(14,58,[
+    [22,58,70,50],           // torso inclinado (plancha)
+    [70,50,88,58],           // pierna
+    [30,58,30,80],[45,54,45,80] // brazos apoyados
+  ], `<line x1="10" y1="82" x2="90" y2="82" stroke="currentColor" stroke-width="3" opacity=".2"/>`),
+
+  fly: figureSVG(50,16,[
+    [50,25,50,55],
+    [50,55,36,88],[50,55,64,88],
+    [50,32,20,30],[50,32,80,30] // brazos abiertos en cruz
+  ]),
+
+  dips: figureSVG(28,30,[
+    [28,39,28,58],
+    [28,58,18,84],[28,58,40,80],
+    [28,44,12,55],[28,50,44,58] // brazos flexionados apoyados
+  ], `<line x1="6" y1="60" x2="6" y2="88" stroke="currentColor" stroke-width="4" opacity=".25"/><line x1="46" y1="60" x2="46" y2="88" stroke="currentColor" stroke-width="4" opacity=".25"/>`),
+
+  // ---- Espalda ----
+  pull_vertical: figureSVG(50,18,[
+    [50,27,50,60],
+    [50,60,38,90],[50,60,62,90],
+    [50,32,28,12],[50,32,72,12] // brazos arriba agarrando barra
+  ], `<line x1="20" y1="10" x2="80" y2="10" stroke="currentColor" stroke-width="4" opacity=".3"/>`),
+
+  pull_horizontal: figureSVG(20,30,[
+    [24,36,58,50],            // torso inclinado hacia adelante
+    [58,50,52,80],[58,50,72,78],
+    [34,40,55,25]              // brazo tirando hacia atrás
+  ]),
+
+  pullover: figureSVG(14,50,[
+    [23,50,58,50],
+    [58,50,74,38],[74,38,70,60],
+    [32,52,15,25]               // brazo estirado hacia atrás/arriba
+  ], `<line x1="10" y1="64" x2="90" y2="64" stroke="currentColor" stroke-width="3" opacity=".25"/>`),
+
+  superman: figureSVG(14,48,[
+    [22,48,70,52],
+    [70,52,90,45],              // piernas elevadas
+    [30,47,10,35]                // brazos extendidos al frente elevados
+  ], `<line x1="8" y1="60" x2="92" y2="60" stroke="currentColor" stroke-width="3" opacity=".2"/>`),
+
+  // ---- Hombros ----
+  press_vertical: figureSVG(50,16,[
+    [50,25,50,58],
+    [50,58,38,90],[50,58,62,90],
+    [50,30,28,8],[50,30,72,8]   // brazos rectos arriba
+  ]),
+
+  lateral_raise: figureSVG(50,16,[
+    [50,25,50,58],
+    [50,58,38,90],[50,58,62,90],
+    [50,32,18,32],[50,32,82,32] // brazos abiertos a los lados
+  ]),
+
+  rear_fly: figureSVG(20,28,[
+    [24,34,56,48],               // torso inclinado
+    [56,48,50,80],[56,48,70,76],
+    [30,38,12,24],[38,42,54,20]  // brazos abiertos hacia atrás
+  ]),
+
+  // ---- Brazos ----
+  curl: figureSVG(50,15,[
+    [50,24,50,58],
+    [50,58,40,90],[50,58,60,90],
+    [50,30,30,50],[30,50,42,30]  // brazo flexionado (curl)
+  ]),
+
+  triceps_extension: figureSVG(50,15,[
+    [50,24,50,58],
+    [50,58,40,90],[50,58,60,90],
+    [50,28,66,14],[66,14,60,34]  // brazo doblado arriba
+  ]),
+
+  // ---- Piernas ----
+  squat: figureSVG(50,14,[
+    [50,23,50,52],
+    [50,52,33,68],[33,68,37,90],
+    [50,52,67,68],[67,68,63,90],
+    [50,30,22,28],[50,30,78,28]  // brazos al frente
+  ]),
+
+  leg_press: figureSVG(20,30,[
+    [24,36,50,50],                // torso reclinado
+    [50,50,72,36],[72,36,86,50],  // piernas empujando
+    [30,40,15,55]
+  ], `<line x1="10" y1="60" x2="10" y2="20" stroke="currentColor" stroke-width="4" opacity=".2"/>`),
+
+  hinge: figureSVG(50,16,[
+    [50,25,55,52],                // torso inclinado hacia adelante
+    [55,52,48,90],[55,52,64,88],
+    [52,32,30,55]                 // brazos hacia el suelo
+  ]),
+
+  leg_extension: figureSVG(22,18,[
+    [22,27,26,55],                 // sentado
+    [26,55,52,55],                 // muslo
+    [52,55,72,40],                 // pierna extendida
+    [26,30,10,45]
+  ], `<line x1="10" y1="60" x2="55" y2="60" stroke="currentColor" stroke-width="3" opacity=".2"/>`),
+
+  leg_curl: figureSVG(14,50,[
+    [23,50,58,50],
+    [58,50,80,60],                 // pierna flexionando hacia glúteo
+    [32,52,15,25]
+  ], `<line x1="10" y1="64" x2="90" y2="64" stroke="currentColor" stroke-width="3" opacity=".25"/>`),
+
+  lunge: figureSVG(50,14,[
+    [50,23,48,52],
+    [48,52,30,60],[30,60,26,90],   // pierna adelantada
+    [48,52,64,72],[64,72,70,50],   // pierna atrás
+    [48,30,24,26],[48,30,70,20]
+  ]),
+
+  hip_thrust: figureSVG(16,60,[
+    [24,60,50,60],                 // espalda apoyada
+    [50,60,66,44],[66,44,66,66],   // pierna flexionada, cadera elevada
+    [24,60,14,80]
+  ], `<line x1="8" y1="82" x2="92" y2="82" stroke="currentColor" stroke-width="3" opacity=".2"/>`),
+
+  // ---- Core ----
+  plank: figureSVG(12,55,[
+    [20,55,80,45],                 // cuerpo recto en plancha
+    [30,56,30,80],                 // antebrazo apoyado
+  ], `<line x1="8" y1="82" x2="92" y2="82" stroke="currentColor" stroke-width="3" opacity=".2"/>`),
+
+  hanging_leg_raise: figureSVG(50,16,[
+    [50,25,50,50],
+    [50,50,35,72],[50,50,65,72],   // piernas elevadas al frente
+    [50,28,30,10],[50,28,70,10]    // brazos arriba agarrando barra
+  ], `<line x1="20" y1="8" x2="80" y2="8" stroke="currentColor" stroke-width="4" opacity=".3"/>`),
+
+  ab_rollout: figureSVG(78,28,[
+    [74,34,50,44],                 // torso inclinado hacia el frente
+    [50,44,30,44],                 // brazos extendidos con rueda
+    [74,40,70,80],[74,40,84,78]    // piernas de rodillas
+  ], `<circle cx="24" cy="46" r="7" fill="none" stroke="currentColor" stroke-width="4"/>`),
+
+  crunch: figureSVG(66,42,[
+    [60,46,38,50],                 // torso curvado
+    [38,50,20,42],[38,50,26,64],   // pierna flexionada
+    [55,40,64,26]                  // brazo cerca de la cabeza
+  ], `<line x1="10" y1="66" x2="90" y2="66" stroke="currentColor" stroke-width="3" opacity=".2"/>`),
+
+  // ---- Pantorrillas ----
+  calf_raise: figureSVG(50,15,[
+    [50,24,50,58],
+    [50,58,42,88],[50,58,58,88],
+    [50,30,35,42],[50,30,65,42]
+  ], `<line x1="30" y1="90" x2="70" y2="90" stroke="currentColor" stroke-width="3" opacity=".2"/>`),
+};
+
+// Mapa: id de ejercicio -> pose
+const EXERCISE_POSE = {
+  p1:"press_horizontal", p2:"press_incline", p3:"fly", p4:"pushup", p5:"pushup", p6:"press_horizontal", p7:"press_horizontal",
+  e1:"pull_vertical", e2:"pull_horizontal", e3:"pull_vertical", e4:"pull_horizontal", e5:"pullover", e6:"pull_horizontal", e7:"superman",
+  h1:"press_vertical", h2:"lateral_raise", h3:"press_vertical", h4:"rear_fly", h5:"pushup", h6:"lateral_raise",
+  b1:"curl", b2:"curl", b3:"triceps_extension", b4:"triceps_extension", b5:"dips", b6:"curl", b7:"pushup",
+  l1:"squat", l2:"leg_press", l3:"hinge", l4:"leg_extension", l5:"leg_curl", l6:"lunge", l7:"squat", l8:"lunge",
+  g1:"hip_thrust", g2:"hip_thrust", g3:"hip_thrust", g4:"hip_thrust",
+  a1:"plank", a2:"hanging_leg_raise", a3:"ab_rollout", a4:"crunch", a5:"crunch",
+  c1:"calf_raise", c2:"calf_raise",
+};
+
+function getPoseSVG(exId){
+  const key = EXERCISE_POSE[exId] || "plank";
+  return POSES[key] || POSES.plank;
+}
