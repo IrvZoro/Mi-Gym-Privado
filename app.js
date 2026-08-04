@@ -93,6 +93,11 @@ const MUSCLE_LABELS = {
   piernas: "Piernas", gluteos: "Glúteos", abdomen: "Abdomen", pantorrillas: "Pantorrillas"
 };
 
+const MUSCLE_ICON = {
+  pecho:"press_horizontal", espalda:"pull_vertical", hombros:"press_vertical", brazos:"curl",
+  piernas:"squat", gluteos:"hip_thrust", abdomen:"plank", pantorrillas:"calf_raise"
+};
+
 // ------------------------------------------------------------
 // Utilidades
 // ------------------------------------------------------------
@@ -255,6 +260,7 @@ function exerciseCardHTML(ex){
   return `
     <div class="exercise-card${done ? " done" : ""}" data-ex-id="${ex.id}">
       <button class="ex-check${done ? " checked" : ""}" data-ex-id="${ex.id}" aria-label="Marcar como hecho">${done ? "✓" : ""}</button>
+      <button class="pose-badge" data-pose-id="${ex.id}" aria-label="Ver ilustración del ejercicio">${getPoseSVG(ex.id)}</button>
       <div class="exercise-body">
         <div class="exercise-info">
           <div class="ex-name">${ex.nombre}</div>
@@ -267,6 +273,25 @@ function exerciseCardHTML(ex){
       </div>
       <div class="ex-sets">${ex.series}<span class="ex-equipo">${ex.equipo}</span></div>
     </div>`;
+}
+
+function attachPoseHandlers(container){
+  container.querySelectorAll(".pose-badge").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const exId = btn.dataset.poseId;
+      const ex = EXERCISES.find(e => e.id === exId);
+      if(!ex) return;
+      openModal(`
+        <div class="pose-modal-illustration">${getPoseSVG(ex.id)}</div>
+        <h3 class="step-title" style="margin-bottom:4px; text-align:center;">${ex.nombre}</h3>
+        <p class="plan-summary" style="text-align:center; margin-bottom:14px;">${ex.nota}</p>
+        <div class="pose-modal-meta">
+          <span class="tag">${ex.series}</span>
+          <span class="tag">${ex.equipo}</span>
+          ${ex.cbum ? '<span class="tag cbum">ESTILO CBUM</span>' : ""}
+        </div>`);
+    });
+  });
 }
 
 function attachCheckHandlers(container){
@@ -338,12 +363,13 @@ function renderPlanTab(){
     if(exs.length === 0) return;
     const block = document.createElement("div");
     block.className = "day-block";
-    block.innerHTML = `<div class="day-heading">${MUSCLE_LABELS[grupo]}</div>` +
+    block.innerHTML = `<div class="day-heading"><span class="chip-icon heading-icon">${POSES[MUSCLE_ICON[grupo]] || ""}</span>${MUSCLE_LABELS[grupo]}</div>` +
       exs.map(exerciseCardHTML).join("");
     container.appendChild(block);
   });
 
   attachCheckHandlers(container);
+  attachPoseHandlers(container);
   updateProgressBar();
   updateRachaChip();
 }
@@ -357,7 +383,7 @@ function renderMuscleChips(){
   Object.keys(MUSCLE_LABELS).forEach(key => {
     const chip = document.createElement("button");
     chip.className = "muscle-chip" + (key === state.activeMuscle ? " active" : "");
-    chip.textContent = MUSCLE_LABELS[key];
+    chip.innerHTML = `<span class="chip-icon">${POSES[MUSCLE_ICON[key]] || ""}</span><span>${MUSCLE_LABELS[key]}</span>`;
     chip.addEventListener("click", () => {
       state.activeMuscle = key;
       renderMuscleChips();
@@ -374,9 +400,10 @@ function renderMuscleContent(){
     return;
   }
   const exs = getExercisesFor(state.activeMuscle, state.lugar, state.biotipo, 8);
-  container.innerHTML = `<div class="day-block"><div class="day-heading">${MUSCLE_LABELS[state.activeMuscle]}</div>` +
+  container.innerHTML = `<div class="day-block"><div class="day-heading"><span class="chip-icon heading-icon">${POSES[MUSCLE_ICON[state.activeMuscle]] || ""}</span>${MUSCLE_LABELS[state.activeMuscle]}</div>` +
     exs.map(exerciseCardHTML).join("") + `</div>`;
   attachCheckHandlers(container);
+  attachPoseHandlers(container);
 }
 
 document.getElementById("btn-goto-musculo").addEventListener("click", () => {
@@ -421,3 +448,187 @@ if(saved && saved.biotipo && saved.lugar){
 } else {
   showStep("welcome");
 }
+
+// Base de datos de ejercicios
+// bodyType score: 1 (poco recomendado) a 3 (muy recomendado)
+// location: "casa", "gym", "ambos"
+// cbum: true => ejercicio de aislamiento/estética estilo bodybuilding clásico (simetría, "mind-muscle", detalle)
+
+const EXERCISES = [
+
+  // ============ PECHO ============
+  { id:"p1", nombre:"Press de banca plano", grupo:"pecho", location:"gym", equipo:"Barra + banco",
+    body:{ecto:3, meso:3, endo:2}, series:"4x6-8", cbum:false,
+    nota:"Base para masa y fuerza en el pecho." },
+  { id:"p2", nombre:"Press inclinado con mancuernas", grupo:"pecho", location:"gym", equipo:"Mancuernas + banco inclinado",
+    body:{ecto:3, meso:3, endo:2}, series:"4x8-10", cbum:false,
+    nota:"Prioriza la parte alta del pecho, clave para el look estético." },
+  { id:"p3", nombre:"Aperturas en polea (cable crossover)", grupo:"pecho", location:"gym", equipo:"Polea",
+    body:{ecto:2, meso:3, endo:3}, series:"3x12-15", cbum:true,
+    nota:"Ejercicio de aislamiento estilo CBUM para marcar la separación del pecho." },
+  { id:"p4", nombre:"Flexiones de pecho", grupo:"pecho", location:"casa", equipo:"Peso corporal",
+    body:{ecto:2, meso:3, endo:3}, series:"4x15-20", cbum:false,
+    nota:"Ideal para casa, se puede elevar los pies para más dificultad." },
+  { id:"p5", nombre:"Flexiones diamante", grupo:"pecho", location:"casa", equipo:"Peso corporal",
+    body:{ecto:2, meso:3, endo:3}, series:"3x12-15", cbum:false,
+    nota:"Enfatiza pecho interno y tríceps." },
+  { id:"p6", nombre:"Press con mochila cargada (piso)", grupo:"pecho", location:"casa", equipo:"Mochila con peso",
+    body:{ecto:3, meso:3, endo:2}, series:"4x10-12", cbum:false,
+    nota:"Sustituto casero del press de banca cuando no hay barra." },
+  { id:"p7", nombre:"Press de pecho en máquina", grupo:"pecho", location:"gym", equipo:"Máquina",
+    body:{ecto:2, meso:3, endo:3}, series:"3x10-12", cbum:false,
+    nota:"Más seguro y controlado, bueno para volumen sin fatiga articular." },
+
+  // ============ ESPALDA ============
+  { id:"e1", nombre:"Dominadas (pull-ups)", grupo:"espalda", location:"ambos", equipo:"Barra fija",
+    body:{ecto:3, meso:3, endo:2}, series:"4x6-10", cbum:false,
+    nota:"El mejor ejercicio para ensanchar la espalda (V-taper)." },
+  { id:"e2", nombre:"Remo con barra", grupo:"espalda", location:"gym", equipo:"Barra",
+    body:{ecto:3, meso:3, endo:2}, series:"4x8-10", cbum:false,
+    nota:"Grosor y densidad de espalda media." },
+  { id:"e3", nombre:"Jalón al pecho en polea", grupo:"espalda", location:"gym", equipo:"Polea alta",
+    body:{ecto:2, meso:3, endo:3}, series:"4x10-12", cbum:false,
+    nota:"Alternativa controlada a dominadas, buena para todos los biotipos." },
+  { id:"e4", nombre:"Remo con mancuerna a una mano", grupo:"espalda", location:"gym", equipo:"Mancuerna + banco",
+    body:{ecto:2, meso:3, endo:3}, series:"3x10-12", cbum:true,
+    nota:"Estilo CBUM: pausa de 1 seg. arriba para maximizar contracción." },
+  { id:"e5", nombre:"Pull-over con mancuerna", grupo:"espalda", location:"gym", equipo:"Mancuerna + banco",
+    body:{ecto:3, meso:2, endo:1}, series:"3x12-15", cbum:true,
+    nota:"Estira el dorsal y ayuda a dar sensación de \"caja torácica\" amplia." },
+  { id:"e6", nombre:"Remo con mochila/toalla (puerta)", grupo:"espalda", location:"casa", equipo:"Mochila con peso o banda",
+    body:{ecto:2, meso:3, endo:3}, series:"4x12-15", cbum:false,
+    nota:"Sustituto de remo con barra usando peso casero o banda elástica." },
+  { id:"e7", nombre:"Superman", grupo:"espalda", location:"casa", equipo:"Peso corporal",
+    body:{ecto:2, meso:2, endo:3}, series:"3x15-20", cbum:false,
+    nota:"Activa lumbares y espalda baja, buen calentamiento." },
+
+  // ============ HOMBROS ============
+  { id:"h1", nombre:"Press militar con barra", grupo:"hombros", location:"gym", equipo:"Barra",
+    body:{ecto:3, meso:3, endo:2}, series:"4x6-8", cbum:false,
+    nota:"Fuerza y masa general de hombro." },
+  { id:"h2", nombre:"Elevaciones laterales con mancuerna", grupo:"hombros", location:"gym", equipo:"Mancuernas",
+    body:{ecto:2, meso:3, endo:3}, series:"4x12-15", cbum:true,
+    nota:"El ejercicio clave para hombros \"anchos\" estilo CBUM. Peso ligero, técnica estricta." },
+  { id:"h3", nombre:"Press con mancuernas sentado", grupo:"hombros", location:"gym", equipo:"Mancuernas + banco",
+    body:{ecto:3, meso:3, endo:2}, series:"4x8-10", cbum:false,
+    nota:"Mayor rango de movimiento que la barra." },
+  { id:"h4", nombre:"Pájaros (deltoide posterior)", grupo:"hombros", location:"gym", equipo:"Mancuernas",
+    body:{ecto:2, meso:3, endo:3}, series:"3x15", cbum:true,
+    nota:"Estilo CBUM: clave para la vista de espalda/hombro 3D." },
+  { id:"h5", nombre:"Flexiones pike (pino asistido)", grupo:"hombros", location:"casa", equipo:"Peso corporal",
+    body:{ecto:2, meso:3, endo:2}, series:"3x10-12", cbum:false,
+    nota:"Sustituto de press militar en casa." },
+  { id:"h6", nombre:"Elevaciones laterales con mochila/garrafón", grupo:"hombros", location:"casa", equipo:"Peso casero",
+    body:{ecto:2, meso:3, endo:3}, series:"4x15", cbum:true,
+    nota:"Mismo principio estético que en gym, con objetos caseros." },
+
+  // ============ BRAZOS (bíceps/tríceps) ============
+  { id:"b1", nombre:"Curl de bíceps con barra", grupo:"brazos", location:"gym", equipo:"Barra",
+    body:{ecto:3, meso:3, endo:2}, series:"4x8-10", cbum:false,
+    nota:"Base para volumen de bíceps." },
+  { id:"b2", nombre:"Curl inclinado con mancuerna", grupo:"brazos", location:"gym", equipo:"Mancuernas + banco",
+    body:{ecto:2, meso:3, endo:3}, series:"3x10-12", cbum:true,
+    nota:"Estilo CBUM: estiramiento profundo del bíceps, muy usado para el \"pico\"." },
+  { id:"b3", nombre:"Press francés (tríceps)", grupo:"brazos", location:"gym", equipo:"Barra Z o mancuerna",
+    body:{ecto:3, meso:3, endo:2}, series:"4x8-10", cbum:false,
+    nota:"Masa de la cabeza larga del tríceps." },
+  { id:"b4", nombre:"Extensión de tríceps en polea (pushdown)", grupo:"brazos", location:"gym", equipo:"Polea",
+    body:{ecto:2, meso:3, endo:3}, series:"3x12-15", cbum:true,
+    nota:"Estilo CBUM: contracción máxima al final del movimiento, ideal para definición." },
+  { id:"b5", nombre:"Fondos en banco (tríceps)", grupo:"brazos", location:"casa", equipo:"Banco o silla",
+    body:{ecto:2, meso:3, endo:2}, series:"3x12-15", cbum:false,
+    nota:"Muy efectivo sin equipo." },
+  { id:"b6", nombre:"Curl con mochila cargada", grupo:"brazos", location:"casa", equipo:"Mochila con peso",
+    body:{ecto:2, meso:3, endo:3}, series:"4x12-15", cbum:false,
+    nota:"Sustituto casero de curl con barra." },
+  { id:"b7", nombre:"Flexiones cerradas (tríceps)", grupo:"brazos", location:"casa", equipo:"Peso corporal",
+    body:{ecto:2, meso:3, endo:3}, series:"3x15", cbum:false,
+    nota:"Complementa el trabajo de tríceps en casa." },
+
+  // ============ PIERNAS ============
+  { id:"l1", nombre:"Sentadilla con barra", grupo:"piernas", location:"gym", equipo:"Barra + rack",
+    body:{ecto:3, meso:3, endo:2}, series:"4x6-8", cbum:false,
+    nota:"El ejercicio más completo para piernas y fuerza general." },
+  { id:"l2", nombre:"Prensa de piernas", grupo:"piernas", location:"gym", equipo:"Máquina",
+    body:{ecto:2, meso:3, endo:3}, series:"4x10-12", cbum:false,
+    nota:"Permite mucho volumen con menor fatiga en espalda baja." },
+  { id:"l3", nombre:"Peso muerto rumano", grupo:"piernas", location:"gym", equipo:"Barra o mancuernas",
+    body:{ecto:3, meso:3, endo:2}, series:"4x8-10", cbum:false,
+    nota:"Isquiotibiales y glúteo, clave para el balance de la pierna." },
+  { id:"l4", nombre:"Extensión de cuádriceps en máquina", grupo:"piernas", location:"gym", equipo:"Máquina",
+    body:{ecto:2, meso:3, endo:3}, series:"3x15", cbum:true,
+    nota:"Estilo CBUM: separación de cuádriceps (\"quad sweep\"), pausa arriba." },
+  { id:"l5", nombre:"Curl femoral en máquina", grupo:"piernas", location:"gym", equipo:"Máquina",
+    body:{ecto:2, meso:3, endo:3}, series:"3x12-15", cbum:true,
+    nota:"Aislamiento estilo CBUM para isquiotibiales bien marcados." },
+  { id:"l6", nombre:"Sentadilla búlgara", grupo:"piernas", location:"ambos", equipo:"Banco (mancuernas opcional)",
+    body:{ecto:2, meso:3, endo:3}, series:"3x10-12 c/pierna", cbum:false,
+    nota:"Excelente en casa o gym, trabaja simetría entre piernas." },
+  { id:"l7", nombre:"Sentadilla a una pierna (pistol asistido)", grupo:"piernas", location:"casa", equipo:"Peso corporal",
+    body:{ecto:2, meso:3, endo:2}, series:"3x8-10 c/pierna", cbum:false,
+    nota:"Alternativa en casa a la sentadilla con barra." },
+  { id:"l8", nombre:"Zancadas caminando", grupo:"piernas", location:"casa", equipo:"Peso corporal / mochila",
+    body:{ecto:2, meso:3, endo:3}, series:"4x12 c/pierna", cbum:false,
+    nota:"Buen volumen para piernas sin necesitar máquinas." },
+
+  // ============ GLÚTEOS ============
+  { id:"g1", nombre:"Hip thrust con barra", grupo:"gluteos", location:"gym", equipo:"Barra + banco",
+    body:{ecto:2, meso:3, endo:3}, series:"4x8-10", cbum:false,
+    nota:"El mejor ejercicio de activación y fuerza de glúteo." },
+  { id:"g2", nombre:"Patada de glúteo en polea", grupo:"gluteos", location:"gym", equipo:"Polea baja",
+    body:{ecto:2, meso:3, endo:3}, series:"3x15", cbum:true,
+    nota:"Estilo CBUM: aislamiento puro, enfoque en la contracción." },
+  { id:"g3", nombre:"Hip thrust a una pierna (casa)", grupo:"gluteos", location:"casa", equipo:"Peso corporal",
+    body:{ecto:2, meso:3, endo:3}, series:"3x15 c/pierna", cbum:false,
+    nota:"Sustituto casero del hip thrust con barra." },
+  { id:"g4", nombre:"Puente de glúteo con banda", grupo:"gluteos", location:"casa", equipo:"Banda elástica",
+    body:{ecto:2, meso:3, endo:3}, series:"4x15-20", cbum:false,
+    nota:"Fácil de progresar en casa con bandas de resistencia." },
+
+  // ============ ABDOMEN ============
+  { id:"a1", nombre:"Plancha (plank)", grupo:"abdomen", location:"casa", equipo:"Peso corporal",
+    body:{ecto:2, meso:2, endo:3}, series:"3x40-60 seg", cbum:false,
+    nota:"Base de estabilidad de core para cualquier biotipo." },
+  { id:"a2", nombre:"Elevación de piernas colgado", grupo:"abdomen", location:"gym", equipo:"Barra fija",
+    body:{ecto:2, meso:3, endo:2}, series:"4x12-15", cbum:true,
+    nota:"Estilo CBUM: control total en la bajada para marcar el abdomen bajo." },
+  { id:"a3", nombre:"Rueda abdominal (ab wheel)", grupo:"abdomen", location:"ambos", equipo:"Rueda abdominal",
+    body:{ecto:2, meso:3, endo:2}, series:"3x10-12", cbum:false,
+    nota:"Exigente, trabaja todo el core en un solo movimiento." },
+  { id:"a4", nombre:"Crunch en polea alta", grupo:"abdomen", location:"gym", equipo:"Polea",
+    body:{ecto:2, meso:2, endo:3}, series:"3x15-20", cbum:true,
+    nota:"Estilo CBUM: permite sobrecarga progresiva del abdomen." },
+  { id:"a5", nombre:"Bicicleta (crunch cruzado)", grupo:"abdomen", location:"casa", equipo:"Peso corporal",
+    body:{ecto:2, meso:2, endo:3}, series:"3x20", cbum:false,
+    nota:"Trabaja oblicuos y recto abdominal en casa." },
+
+  // ============ PANTORRILLAS ============
+  { id:"c1", nombre:"Elevación de talones de pie", grupo:"pantorrillas", location:"gym", equipo:"Máquina o mancuernas",
+    body:{ecto:2, meso:3, endo:2}, series:"4x15-20", cbum:true,
+    nota:"Estilo CBUM: pausa de 1-2 seg arriba y estiramiento completo abajo." },
+  { id:"c2", nombre:"Elevación de talones en escalón (casa)", grupo:"pantorrillas", location:"casa", equipo:"Escalón",
+    body:{ecto:2, meso:3, endo:2}, series:"4x20", cbum:false,
+    nota:"Sustituto casero, usar mochila con peso para sobrecargar." },
+];
+
+// Descripciones de biotipos usadas en el onboarding
+const BODY_TYPES = {
+  ectomorfo: {
+    nombre: "Ectomorfo",
+    resumen: "Complexión delgada, metabolismo rápido, le cuesta ganar masa.",
+    enfoque: "Prioriza básicos multiarticulares, pocas series pesadas, más descanso entre series (90-120s) y menos volumen de aislamiento para no sobre-fatigar. Objetivo principal: ganar masa muscular total.",
+    color: "#6FA8DC"
+  },
+  mesomorfo: {
+    nombre: "Mesomorfo",
+    resumen: "Complexión atlética, responde bien tanto a fuerza como a estética.",
+    enfoque: "Buen balance entre básicos pesados y aislamiento estético. Puede manejar mayor volumen total y frecuencia. Objetivo principal: maximizar forma y simetría.",
+    color: "#E06C75"
+  },
+  endomorfo: {
+    nombre: "Endomorfo",
+    resumen: "Complexión más robusta, metabolismo lento, gana músculo y grasa con facilidad.",
+    enfoque: "Más volumen, descansos cortos (45-60s), circuitos y ejercicios que también eleven el gasto calórico. Objetivo principal: definición y control de composición corporal.",
+    color: "#D9A441"
+  }
+};
